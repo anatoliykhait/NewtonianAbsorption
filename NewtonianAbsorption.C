@@ -99,6 +99,20 @@ bool Foam::viscosityModels::NewtonianAbsorption::read
     viscosityProperties_.readEntry("x2", x2_);
     nu_ = nu0_;
 
+    forAll(U_.mesh().cells(),celli)
+    {
+        if ((U_.mesh().C()[celli][0] >= x1_) &&
+            (U_.mesh().C()[celli][0] <= x2_))
+        {
+            nu_[celli] = nu_[celli] + nuD_.value()
+                       * (U_.mesh().C()[celli][0] - x1_) / (x2_ - x1_);
+        }
+        else if (U_.mesh().C()[celli][0] > x2_)
+        {
+            nu_[celli] = nu_[celli] + nuD_.value();
+        }
+    }
+
     return true;
 }
 
